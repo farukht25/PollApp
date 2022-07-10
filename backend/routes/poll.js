@@ -33,8 +33,8 @@ router.route('/add').post((req, res) => {
   });
 
   newPoll.save()
-  .then(() => res.json('poll added!'))
-  .catch(err => res.status(400).json('Error: ' + err));
+    .then(() => res.json('poll added!'))
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/:id').get((req, res) => {
@@ -52,18 +52,18 @@ router.route('/:id').delete((req, res) => {
 router.route('/update/:id').post((req, res) => {
   Poll.findById(req.params.id)
     .then(poll => {
-        poll.pollName = req.body.pollName;
-        poll.optionCount = Number(req.body.optionCount);
-        poll.option1 = req.body.option1;
-        poll.option2 = req.body.option2;
-        poll.option3 = req.body.option3;
-        poll.option4 = req.body.option4;
-        poll.vote1 = req.body.vote1;
-        poll.vote2 = req.body.vote2;
-        poll.vote3 = req.body.vote3;
-        poll.vote4 = req.body.vote4;
+      poll.pollName = req.body.pollName;
+      poll.optionCount = Number(req.body.optionCount);
+      poll.option1 = req.body.option1;
+      poll.option2 = req.body.option2;
+      poll.option3 = req.body.option3;
+      poll.option4 = req.body.option4;
+      poll.vote1 = req.body.vote1;
+      poll.vote2 = req.body.vote2;
+      poll.vote3 = req.body.vote3;
+      poll.vote4 = req.body.vote4;
 
-      Poll.save()
+      poll.save()
         .then(() => res.json('poll updated!'))
         .catch(err => res.status(400).json('Error: ' + err));
     })
