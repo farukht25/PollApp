@@ -1,15 +1,18 @@
 import logo from './logo.svg';
 import './App.css';
 import CreatePollForm from './components/CreatePollForm';
+import Layout from './components/Layout';
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 import Poll from '../src/components/Poll'
+import AllPolls from '../src/components/AllPolls'
 
 
 function App() {
   const [allPolls, setAllPolls] = useState([]);
   useEffect(() => {
-     axios
+    axios
       .get("http://localhost:5000/poll")
       .then(function (response) {
         setAllPolls(response.data);
@@ -18,10 +21,19 @@ function App() {
   }, [])
   return (
     <div className="App">
-      {/* <CreatePollForm/> */}
-      {allPolls.slice(0,1).map(poll=>{
-        return <Poll key={poll._id} pollId={poll._id}/>
-      })}
+
+
+      <BrowserRouter>
+        <Routes>
+          <Route exact path="/" element={<Layout />}>
+            <Route exact index element={<CreatePollForm />} />
+            <Route exact path='/createPoll' element={<CreatePollForm />} />
+            <Route exact path='/poll/:id' element={<Poll />} />
+            <Route exact path='/polls' element={<AllPolls />} />
+
+          </Route>
+        </Routes>
+      </BrowserRouter>
 
     </div>
   );

@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import * as Yup from 'yup'
 import { Formik, useFormik } from 'formik'
 import axios from "axios";
 
 export default function CreatePollForm() {
-
+    const [shareLink, setShareLink] = useState("");
     const formik = useFormik(
         {
             initialValues: {
@@ -45,19 +45,18 @@ export default function CreatePollForm() {
             vote1: 0,
             option2: values.option2,
             vote2: 0,
-            option3: values.option3,
+            option3: (values.option3.length === 0 ? null : values.option3),
             vote3: 0,
-            option4: values.option4,
+            option4: (values.option4.length === 0 ? null : values.option4),
             vote4: 0,
         }
-        alert(JSON.stringify(pollObj))
         axios.post("http://localhost:5000/poll/add", pollObj)
             .then((response) => {
-                console.log(response);
+                setShareLink(response.data.pollId)
 
             })
-            .catch(err=>{
-                if(err.response){
+            .catch(err => {
+                if (err.response) {
                     console.log(err)
                 }
             })
@@ -65,6 +64,13 @@ export default function CreatePollForm() {
 
 
     }
+
+    const copyToClickBoard = (event) => {
+        event.preventDefault();
+        navigator.clipboard.writeText('http://localhost:3000/poll/'+shareLink)
+
+    }
+
     return (
         <div className='container border border-primary'>
             <label>Question</label>
@@ -88,6 +94,11 @@ export default function CreatePollForm() {
                 {formik.touched.option4 && formik.errors.option4 ? <p className="text-danger">{formik.errors.option4}</p> : null}
                 <button type='submit'>Submit</button>
             </form>
+            {shareLink && <>
+            <h4>Poll Created. </h4>
+                <input type="text" value={'http://localhost:3000/poll/'+shareLink} id="myInput" readOnly />
+                <button onClick={(event) => copyToClickBoard(event)}>Copy Link</button></>
+            }
         </div>
     )
 }

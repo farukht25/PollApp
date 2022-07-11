@@ -1,9 +1,13 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import ProgressBar from './ProgressBar';
 
-export default function Poll(pollId) {
+
+export default function Poll({pollId}) {
+    const params = useParams();
+    var id=(pollId?pollId:params.id)
     const [pollData, setPollData] = useState(
         {
             pollName: "",
@@ -23,8 +27,9 @@ export default function Poll(pollId) {
     );
     const [touched, setTouched] = useState(false)
     useEffect(() => {
+        
         axios
-            .get(`http://localhost:5000/poll/${pollId.pollId}`)
+            .get(`http://localhost:5000/poll/${id}`)
             .then(function (response) {
                 const newpollData = { ...pollData }
                 newpollData['pollName'] = response.data.pollName
@@ -92,7 +97,7 @@ export default function Poll(pollId) {
             option4: newpollData.option4,
             vote4: newpollData.vote4,
         }
-        axios.post(`http://localhost:5000/poll/update/${pollId.pollId}`, pollObj)
+        axios.post(`http://localhost:5000/poll/update/${id}`, pollObj)
             .then((response) => {
                 console.log(response);
 
@@ -106,7 +111,7 @@ export default function Poll(pollId) {
 
     return (
         <>
-            <div className='container'>
+            <div className='container border my-2 py-2'>
                 <h1>Q.{pollData.pollName}</h1>
 
                 <h2>a.{pollData.option1}</h2>
@@ -121,21 +126,21 @@ export default function Poll(pollId) {
                 <button type='button' name='vote2' onClick={e => handleVote(e)}>Vote</button>
                 <ProgressBar key='b' percentage={pollData.percentage2} />
 
-                {(pollData.option3).length > 0 ? <>
+                {pollData.option3 &&<>
                 <h2>c.{pollData.option3}</h2> 
                 {/* {touched?<ProgressBar key='c' percentage={pollData.percentage3} />:<button type='button' name='vote3' onClick={e => handleVote(e)}>Vote</button>} */}
                 
                 <button type='button' name='vote3' onClick={e => handleVote(e)}>Vote</button>
                 <ProgressBar key='c' percentage={pollData.percentage3} />
-                </> : null}
+                </>}
 
-                {(pollData.option4).length > 0 ? <>
+                {pollData.option4 && <>
                 <h2>d.{pollData.option4}</h2> 
                 {/* {touched?<ProgressBar key='d' percentage={pollData.percentage4} />:<button type='button' name='vote4' onClick={e => handleVote(e)}>Vote</button>} */}
                 
                 <button type='button' name='vote4' onClick={e => handleVote(e)}>Vote</button>
                 <ProgressBar key='d' percentage={pollData.percentage4} />
-                </> : null}
+                </> }
 
             </div>
         </>
