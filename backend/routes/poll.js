@@ -33,7 +33,7 @@ router.route('/add').post((req, res) => {
   });
 
   newPoll.save()
-    .then(() => res.json({'message':'poll added!','pollId':`62cae7f4f279447b9a7440cc`}))
+    .then(() => res.json({'message':'poll added!','pollId':newPoll._id}))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

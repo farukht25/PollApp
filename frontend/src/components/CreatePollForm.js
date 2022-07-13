@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import * as Yup from 'yup'
 import { Formik, useFormik } from 'formik'
 import axios from "axios";
+import { FaRegCopy } from 'react-icons/fa';
 
 export default function CreatePollForm() {
-    const [shareLink, setShareLink] = useState("");
+    const [pollId, setPollId] = useState("");
     const formik = useFormik(
         {
             initialValues: {
@@ -52,7 +53,7 @@ export default function CreatePollForm() {
         }
         axios.post("http://localhost:5000/poll/add", pollObj)
             .then((response) => {
-                setShareLink(response.data.pollId)
+                setPollId(response.data.pollId)
 
             })
             .catch(err => {
@@ -67,38 +68,64 @@ export default function CreatePollForm() {
 
     const copyToClickBoard = (event) => {
         event.preventDefault();
-        navigator.clipboard.writeText('http://localhost:3000/poll/'+shareLink)
+        navigator.clipboard.writeText('http://localhost:3000/poll/' + pollId)
 
     }
 
     return (
-        <div className='container border border-primary'>
-            <label>Question</label>
-            <form onSubmit={formik.handleSubmit}>
-                <input name='formName' type='text' onChange={formik.handleChange} value={formik.values.formName} onBlur={formik.handleBlur} />
-                {formik.touched.formName && formik.errors.formName ? <p className="text-danger">{formik.errors.formName}</p> : null}
+        <div className='container  p-3'>
 
-                <label>Choice 1</label>
-                <input name='option1' type='text' onChange={formik.handleChange} value={formik.values.option1} onBlur={formik.handleBlur} />
-                {formik.touched.option1 && formik.errors.option1 ? <p className="text-danger">{formik.errors.option1}</p> : null}
-
-                <label>Choice 2</label>
-                <input name='option2' type='text' onChange={formik.handleChange} value={formik.values.option2} onBlur={formik.handleBlur} />
-                {formik.touched.option2 && formik.errors.option2 ? <p className="text-danger">{formik.errors.option2}</p> : null}
-                <label>Choice 3</label>
-                <input name='option3' type='text' onChange={formik.handleChange} value={formik.values.option3} onBlur={formik.handleBlur} />
-                {formik.touched.option3 && formik.errors.option3 ? <p className="text-danger">{formik.errors.option3}</p> : null}
-
-                <label>Choice 4</label>
-                <input name='option4' type='text' onChange={formik.handleChange} value={formik.values.option4} onBlur={formik.handleBlur} />
-                {formik.touched.option4 && formik.errors.option4 ? <p className="text-danger">{formik.errors.option4}</p> : null}
-                <button type='submit'>Submit</button>
+            <form className="form-horizontal" onSubmit={formik.handleSubmit}>
+                <div className="form-group row m-2">
+                    <label className="control-label col-sm-2">Title  </label>
+                    <div className="col-sm-10 ">
+                        <input placeholder='Title' className="form-control" name='formName' type='text' onChange={formik.handleChange} value={formik.values.formName} onBlur={formik.handleBlur} />
+                        {formik.touched.formName && formik.errors.formName ? <p className="text-danger">{formik.errors.formName}</p> : null}
+                    </div>
+                </div>
+                <div className="form-group row m-2">
+                    <label className="control-label col-sm-2">Choice 1</label>
+                    <div className="col-sm-10">
+                        <input placeholder='Option 1' className="form-control" name='option1' type='text' onChange={formik.handleChange} value={formik.values.option1} onBlur={formik.handleBlur} />
+                        {formik.touched.option1 && formik.errors.option1 ? <p className="text-danger">{formik.errors.option1}</p> : null}
+                    </div>
+                </div>
+                <div className="form-group row m-2">
+                    <label className="control-label col-sm-2">Choice 2</label>
+                    <div className="col-sm-10">
+                        <input placeholder='Option 2' className="form-control" name='option2' type='text' onChange={formik.handleChange} value={formik.values.option2} onBlur={formik.handleBlur} />
+                        {formik.touched.option2 && formik.errors.option2 ? <p className="text-danger">{formik.errors.option2}</p> : null}
+                    </div></div>
+                <div className="form-group row m-2">
+                    <label className="control-label col-sm-2">Choice 3</label>
+                    <div className="col-sm-10">
+                        <input placeholder='Option 3 (Optional)' className="form-control" name='option3' type='text' onChange={formik.handleChange} value={formik.values.option3} onBlur={formik.handleBlur} />
+                        {formik.touched.option3 && formik.errors.option3 ? <p className="text-danger">{formik.errors.option3}</p> : null}
+                    </div></div>
+                <div className="form-group row m-2">
+                    <label className="control-label col-sm-2">Choice 4</label>
+                    <div className="col-sm-10">
+                        <input placeholder='Option 4 (Optional)' className="form-control" name='option4' type='text' onChange={formik.handleChange} value={formik.values.option4} onBlur={formik.handleBlur} />
+                        {formik.touched.option4 && formik.errors.option4 ? <p className="text-danger">{formik.errors.option4}</p> : null}
+                        <button className="btn btn-primary m-2" type='submit'>Create Poll</button>
+                    </div>
+                </div>
             </form>
-            {shareLink && <>
-            <h4>Poll Created. </h4>
-                <input type="text" value={'http://localhost:3000/poll/'+shareLink} id="myInput" readOnly />
-                <button onClick={(event) => copyToClickBoard(event)}>Copy Link</button></>
+            {pollId && <>
+                <h4>Poll Created!! </h4>
+
+
+                <div class="input-group">
+                    <input type="text" class="form-control" value={'http://localhost:3000/poll/' + pollId} id="myInput" readOnly />
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="button" onClick={(event) => copyToClickBoard(event)}>
+                            <FaRegCopy />
+                        </button>
+                    </div>
+                </div>
+            </>
             }
         </div>
     )
+
 }

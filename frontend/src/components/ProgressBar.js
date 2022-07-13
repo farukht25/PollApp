@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default function ProgressBar(percentage) {
-    console.log("per" + percentage.percentage)
+export default function ProgressBar({percentage,barType}) {
+    console.log("per" + percentage)
     return (
         <div className="progress">
-            <div className="progress-bar" role="progressbar" style={{ width: `${percentage.percentage}%` }} aria-valuenow={percentage.percentage}
-                aria-valuemin="0" aria-valuemax="100">{percentage.percentage}%</div>
+            <div className={barType}  role="progressbar" style={{ width: `${percentage}%` }} aria-valuenow={percentage}
+                aria-valuemin="0" aria-valuemax="100">{percentage}%</div>
         </div>
     )
 }

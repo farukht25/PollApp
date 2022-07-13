@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 import Poll from '../src/components/Poll'
 import AllPolls from '../src/components/AllPolls'
+import PageNotFound from '../src/components/PageNotFound'
 
 
 function App() {
@@ -25,12 +26,12 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-          <Route exact path="/" element={<Layout />}>
+          <Route path="*" element={<PageNotFound />} />
+          <Route path="/" element={<Layout />}>
             <Route exact index element={<CreatePollForm />} />
             <Route exact path='/createPoll' element={<CreatePollForm />} />
             <Route exact path='/poll/:id' element={<Poll />} />
             <Route exact path='/polls' element={<AllPolls />} />
-
           </Route>
         </Routes>
       </BrowserRouter>

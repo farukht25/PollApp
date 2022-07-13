@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 import Poll from '../components/Poll'
+import {  Link } from "react-router-dom";
 
 export default function AllPolls() {
     const [allPolls, setAllPolls] = useState([]);
@@ -17,7 +18,9 @@ export default function AllPolls() {
   return (
     <div>
         {allPolls.map(poll => {
-          return <Poll key={poll._id} pollId={poll._id} />
+          return (<><h1>{poll.pollName}</h1>
+          <Link className="nav-link" to={'/poll/'+poll._id} >Visit Poll</Link>
+          </>)
         })}
     </div>
   )

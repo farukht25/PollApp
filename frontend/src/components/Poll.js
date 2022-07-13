@@ -1,13 +1,13 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams,Navigate } from "react-router-dom";
 import axios from "axios";
 import ProgressBar from './ProgressBar';
 
 
-export default function Poll({pollId}) {
+export default function Poll({ pollId }) {
     const params = useParams();
-    var id=(pollId?pollId:params.id)
+    var id = (pollId ? pollId : params.id)
     const [pollData, setPollData] = useState(
         {
             pollName: "",
@@ -25,12 +25,16 @@ export default function Poll({pollId}) {
             percentage4: 0,
         }
     );
-    const [touched, setTouched] = useState(false)
+    const [selectedOption, setselectedOption] = useState("")
+    const [voted, setVoted] = useState("")
+    const [pollExists, setPollExists] = useState(true)
+    
     useEffect(() => {
-        
+
         axios
             .get(`http://localhost:5000/poll/${id}`)
             .then(function (response) {
+                
                 const newpollData = { ...pollData }
                 newpollData['pollName'] = response.data.pollName
                 newpollData['option1'] = response.data.option1
@@ -59,17 +63,26 @@ export default function Poll({pollId}) {
             })
             .catch(err => {
                 if (err.response) {
-                    console.log(err)
+                    console.log(pollData.pollName.length===0)
+                    setPollExists(false)
                 }
             })
             ;
 
     }, [])
-    const handleVote = (event) => {
+    const selectOption = (event) => {
         event.preventDefault()
-        const name = event.target.name
+        const name = event.target.id
+        
+        if (selectedOption === name) return
         const newpollData = { ...pollData }
-
+        if(selectedOption.length > 0){ 
+            console.log(newpollData[selectedOption]+" will be "+newpollData[selectedOption]-1)
+            newpollData[selectedOption] = parseInt(newpollData[selectedOption]) - 1;
+        }
+        setselectedOption(name)
+        
+        
         newpollData[name] = parseInt(newpollData[name]) + 1;
         const total = parseInt(newpollData.vote1) + parseInt(newpollData.vote2) + parseInt(newpollData.vote3) + parseInt(newpollData.vote4)
         const p1 = (parseInt(newpollData.vote1) / parseInt(total)) * 100;
@@ -81,10 +94,12 @@ export default function Poll({pollId}) {
         newpollData['percentage3'] = parseInt(p3)
         newpollData['percentage4'] = parseInt(p4)
         setPollData(newpollData)
-        updateDB(newpollData);
-        setTouched(true)
+        // updateDB(newpollData);
+        
     }
-    const updateDB = (newpollData) => {
+    const updateDB = (event) => {
+        event.preventDefault()
+        const newpollData = { ...pollData }
         const pollObj = {
             pollName: newpollData.pollName,
             optionCount: 0,
@@ -104,43 +119,71 @@ export default function Poll({pollId}) {
             })
             .catch(err => {
                 if (err.response) {
-                    console.log(err)
+                    
                 }
             })
+            setVoted(true)
     }
 
+    if(!pollExists)return <Navigate to="/pageNotFound" />
     return (
         <>
             <div className='container border my-2 py-2'>
                 <h1>Q.{pollData.pollName}</h1>
 
-                <h2>a.{pollData.option1}</h2>
-                {/* {touched?<ProgressBar key='a' percentage={pollData.percentage1} />:<button type='button' name='vote1' onClick={e => handleVote(e)}>Vote</button>} */}
-                
-                <button type='button' name='vote1' onClick={e => handleVote(e)}>Vote</button>
-                <ProgressBar key='a' percentage={pollData.percentage1} />
 
-                <h2>b.{pollData.option2}</h2>
-                {/* {touched?<ProgressBar key='b' percentage={pollData.percentage2} />:<button type='button' name='vote2' onClick={e => handleVote(e)}>Vote</button>} */}
-                
-                <button type='button' name='vote2' onClick={e => handleVote(e)}>Vote</button>
-                <ProgressBar key='b' percentage={pollData.percentage2} />
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" id="vote1" checked={selectedOption === 'vote1'}
+                        onClick={e => selectOption(e)} 
+                        key={Math.random()}/>
+                    <label class="form-check-label" for="option1">
+                        a.{pollData.option1}
+                    </label>
+                </div>
+                {voted && <ProgressBar barType='progress-bar bg-success' key='a' percentage={pollData.percentage1} />}
 
-                {pollData.option3 &&<>
-                <h2>c.{pollData.option3}</h2> 
-                {/* {touched?<ProgressBar key='c' percentage={pollData.percentage3} />:<button type='button' name='vote3' onClick={e => handleVote(e)}>Vote</button>} */}
-                
-                <button type='button' name='vote3' onClick={e => handleVote(e)}>Vote</button>
-                <ProgressBar key='c' percentage={pollData.percentage3} />
+
+
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" id="vote2" checked={selectedOption === 'vote2'} 
+                    key={Math.random()}
+                    onClick={e => selectOption(e)} />
+                    <label class="form-check-label" for="option2">
+                        b.{pollData.option2}
+                    </label>
+                </div>
+                {voted && <ProgressBar barType='progress-bar bg-info' key='b' percentage={pollData.percentage2} />}
+
+
+
+                {pollData.option3 && <>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="option" id="vote3" checked={selectedOption === 'vote3'}
+                        key={Math.random()} 
+                        onClick={e => selectOption(e)} />
+                        <label class="form-check-label" for="option3">
+                            c.{pollData.option3}
+                        </label>
+                    </div>
+                    {voted && <ProgressBar barType='progress-bar bg-warning' key='c' percentage={pollData.percentage3} />}
+
                 </>}
 
                 {pollData.option4 && <>
-                <h2>d.{pollData.option4}</h2> 
-                {/* {touched?<ProgressBar key='d' percentage={pollData.percentage4} />:<button type='button' name='vote4' onClick={e => handleVote(e)}>Vote</button>} */}
-                
-                <button type='button' name='vote4' onClick={e => handleVote(e)}>Vote</button>
-                <ProgressBar key='d' percentage={pollData.percentage4} />
-                </> }
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="option" id="vote4" checked={selectedOption === 'vote4'} 
+                        key={Math.random()}
+                        onClick={e => selectOption(e)} />
+                        <label class="form-check-label" for="option4">
+                            d.{pollData.option3}
+                        </label>
+                    </div>
+                    {voted && <ProgressBar barType='progress-bar bg-danger' key='d' percentage={pollData.percentage4} />}
+
+
+                </>}
+                {!voted &&<button className="btn btn-primary m-2" type='button' onClick={e=>updateDB(e)}>Vote</button>}
 
             </div>
         </>
